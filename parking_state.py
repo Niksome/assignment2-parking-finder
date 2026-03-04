@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 import threading
 import time
 
-# Change this to adjust the reservation time. It is given in seconds
+# This is the reservation time in seconds in case none is specified in the config. The default is 5 minutes (300 seconds).
 RESERVATION_TIME = 300
 
 # result codes of commands

@@ -14,6 +14,8 @@
     - supports reservation expiration
     - The ```reserve()``` function guarantees no overbooking by performing the capacity check and update under the same lock
   - making diagram
+- writing parts of the report
+- writing parts of README.md
 
 
 ## Bug fixes
