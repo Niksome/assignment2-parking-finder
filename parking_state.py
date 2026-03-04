@@ -5,6 +5,21 @@ from typing import Dict, List, Optional
 import threading
 import time
 
+# result codes of commands
+OK = "OK"
+ERR = "ERR"
+EXISTS = "EXISTS"
+FULL = "FULL"
+NOT_FOUND = "NOT_FOUND"
+
+# error message templates
+ERR_TTL = "ttl_seconds must be > 0"
+ERR_CFG_FORMAT = "Each lot config must be a dict like {'id': 'A', 'capacity': 50}"
+ERR_CFG_KEYS = "Each lot must have keys: 'id' and 'capacity'"
+ERR_EMPTY_LOT_ID = "lot id cannot be empty"
+ERR_CAPACITY = "capacity must be >= 0 for lot {lot_id}"
+ERR_DUPLICATE_LOT = "duplicate lot id: {lot_id}"
+
 
 @dataclass
 class Lot:
@@ -16,7 +31,7 @@ class Lot:
 class ParkingState:
     def __init__(self, lots: List[dict], ttl_seconds: int = 300) -> None:
         if ttl_seconds <= 0:
-            raise ValueError("ttl_seconds must be > 0")
+            raise ValueError(ERR_TTL)
 
         self.ttl_seconds = int(ttl_seconds)
         self._lots: Dict[str, Lot] = {}
@@ -24,19 +39,19 @@ class ParkingState:
 
         for cfg in lots:
             if not isinstance(cfg, dict):
-                raise ValueError("Each lot config must be a dict like {'id': 'A', 'capacity': 50}")
+                raise ValueError(ERR_CFG_FORMAT)
             if "id" not in cfg or "capacity" not in cfg:
-                raise ValueError("Each lot must have keys: 'id' and 'capacity'")
+                raise ValueError(ERR_CFG_KEYS)
 
             lot_id = str(cfg["id"]).strip()
             if not lot_id:
-                raise ValueError("lot id cannot be empty")
+                raise ValueError(ERR_EMPTY_LOT_ID)
 
             capacity = int(cfg["capacity"])
             if capacity < 0:
-                raise ValueError(f"capacity must be >= 0 for lot {lot_id}")
+                raise ValueError(ERR_CAPACITY.format(lot_id=lot_id))
             if lot_id in self._lots:
-                raise ValueError(f"duplicate lot id: {lot_id}")
+                raise ValueError(ERR_DUPLICATE_LOT.format(lot_id=lot_id))
 
             self._lots[lot_id] = Lot(lot_id=lot_id, capacity=capacity)
             self._locks[lot_id] = threading.Lock()
@@ -97,7 +112,7 @@ class ParkingState:
     def reserve(self, lot_id: str, plate: str) -> str:
         plate = str(plate).strip()
         if not plate:
-            return "ERR"
+            return ERR
 
         lot = self._get_lot(lot_id)
         lock = self._locks[lot.lot_id]
@@ -107,19 +122,19 @@ class ParkingState:
             self._cleanup_expired_locked(lot, now=now)
 
             if plate in lot.reservations:
-                return "EXISTS"
+                return EXISTS
 
             active = len(lot.reservations)
             if active >= lot.capacity:
-                return "FULL"
+                return FULL
 
             lot.reservations[plate] = now + self.ttl_seconds
-            return "OK"
+            return OK
 
     def cancel(self, lot_id: str, plate: str) -> str:
         plate = str(plate).strip()
         if not plate:
-            return "ERR"
+            return ERR
         
         lot = self._get_lot(lot_id)
         lock = self._locks[lot.lot_id]
@@ -129,11 +144,7 @@ class ParkingState:
             self._cleanup_expired_locked(lot, now=now)
 
             if plate not in lot.reservations:
-                return "NOT_FOUND"
+                return NOT_FOUND
             
             del lot.reservations[plate]
-            return "OK"
-    
-if __name__ == "__main__":
-    s = ParkingState([{"id": "A", "capacity": 1}, {"id": "B", "capacity": 2}], ttl_seconds=5)
-    print("lots:", list(s._lots.keys()))
+            return OK
