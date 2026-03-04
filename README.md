@@ -2,8 +2,13 @@ CECS 327 Campus Smart Parking Finder
 Group members:
 
 Andrej Ermoshkin
+
 Ashley Celis
+
+
 Fortune Meya
+
+
 
 How to run:
 Step 0: Setup
@@ -30,4 +35,5 @@ Command: python sensorsimulator
 
 Step 5: Run the Subscriber Client
 Command: python SubscriberClient
+
 
