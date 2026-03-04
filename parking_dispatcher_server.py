@@ -38,7 +38,7 @@ ENCODING_UTF8 = "utf-8"
 
 
 def load_config(path=DEFAULT_CONFIG_PATH):
-    with open(path, "r") as f:
+    with open(path, MODE_READ) as f:
         return json.load(f)
 
 
