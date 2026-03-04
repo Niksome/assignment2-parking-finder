@@ -1,0 +1,13 @@
+{
+  "host": "127.0.0.1",
+  "port": 5001,
+  "backlog": 128,
+  "thread_pool_size": 16,
+  "conn_queue_size": 256,
+  "reservation_ttl_seconds": 300,
+  "lots": [
+    {"id": "A", "capacity": 50},
+    {"id": "B", "capacity": 30},
+    {"id": "C", "capacity": 25}
+  ]
+}
