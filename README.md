@@ -19,7 +19,7 @@ Activate it:
 On Windows: .venv\Scripts\activate
 On Linux/macOS: source .venv/bin/activate
 
-Install dependencies: pip install -r requirements.txt
+No packages were used.
 
 Step 1: Start the Parking Server
 Command: python parking_server.py
@@ -35,5 +35,6 @@ Command: python sensorsimulator
 
 Step 5: Run the Subscriber Client
 Command: python SubscriberClient
+
 
 
