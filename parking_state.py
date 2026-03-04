@@ -5,6 +5,9 @@ from typing import Dict, List, Optional
 import threading
 import time
 
+# Change this to adjust the reservation time. It is given in seconds
+RESERVATION_TIME = 300
+
 # result codes of commands
 OK = "OK"
 ERR = "ERR"
@@ -20,6 +23,12 @@ ERR_EMPTY_LOT_ID = "lot id cannot be empty"
 ERR_CAPACITY = "capacity must be >= 0 for lot {lot_id}"
 ERR_DUPLICATE_LOT = "duplicate lot id: {lot_id}"
 
+# keys
+LOT_ID_KEY = "id"
+CAPACITY_KEY = "capacity"
+OCCUPIED_KEY = "occupied"
+FREE_KEY = "free"
+
 
 @dataclass
 class Lot:
@@ -29,7 +38,7 @@ class Lot:
 
 
 class ParkingState:
-    def __init__(self, lots: List[dict], ttl_seconds: int = 300) -> None:
+    def __init__(self, lots: List[dict], ttl_seconds: int = RESERVATION_TIME) -> None:
         if ttl_seconds <= 0:
             raise ValueError(ERR_TTL)
 
@@ -40,14 +49,14 @@ class ParkingState:
         for cfg in lots:
             if not isinstance(cfg, dict):
                 raise ValueError(ERR_CFG_FORMAT)
-            if "id" not in cfg or "capacity" not in cfg:
+            if LOT_ID_KEY not in cfg or CAPACITY_KEY not in cfg:
                 raise ValueError(ERR_CFG_KEYS)
 
-            lot_id = str(cfg["id"]).strip()
+            lot_id = str(cfg[LOT_ID_KEY]).strip()
             if not lot_id:
                 raise ValueError(ERR_EMPTY_LOT_ID)
 
-            capacity = int(cfg["capacity"])
+            capacity = int(cfg[CAPACITY_KEY])
             if capacity < 0:
                 raise ValueError(ERR_CAPACITY.format(lot_id=lot_id))
             if lot_id in self._lots:
@@ -90,10 +99,10 @@ class ParkingState:
                 free = lot.capacity - occupied
                 result.append(
                     {
-                    "id": lot.lot_id,
-                    "capacity": lot.capacity,
-                    "occupied": occupied,
-                    "free": free,
+                    LOT_ID_KEY: lot.lot_id,
+                    CAPACITY_KEY: lot.capacity,
+                    OCCUPIED_KEY: occupied,
+                    FREE_KEY: free,
                     }
                 )
         return result
