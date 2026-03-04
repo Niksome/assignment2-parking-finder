@@ -4,15 +4,16 @@
 
 - setting up the repository
 - ```config.json```
-- ```parking_dispatcher_server.py```
-  - implemented a dispatcher/worker architecture using a bounded thread pool and connection queue
-  - main thread accepts TCP connections -> dispatches them to worker threads
-  - each worker handles commands and interacts with the same `ParkingState`instance
-- ```parking_state.py```
-  - implemented the in-memory parking lot model with per-lot locks to ensure thread safety under concurrent access
-  - supports reservation expiration
-  - The ```reserve()``` function guarantees no overbooking by performing the capacity check and update under the same lock
-- So in total I did Part A (Multithreaded Parking Server)
+- Part A (Multithreaded Parking Server)
+  - ```parking_dispatcher_server.py```
+    - implemented a dispatcher/worker architecture using a bounded thread pool and connection queue
+    - main thread accepts TCP connections -> dispatches them to worker threads
+    - each worker handles commands and interacts with the same `ParkingState`instance
+  - ```parking_state.py```
+    - implemented the in-memory parking lot model with per-lot locks to ensure thread safety under concurrent access
+    - supports reservation expiration
+    - The ```reserve()``` function guarantees no overbooking by performing the capacity check and update under the same lock
+  - making diagram
 
 
 ## Bug fixes
