@@ -1,0 +1,20 @@
+import socket
+import sys
+
+HOST = '127.0.0.1'
+PORT = 8081
+
+def send_upd(lotId, delta):
+    cmd = f"UPDATE {lotId} {delta}\n"
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(cmd.encode())
+        
+def main(lotId, delta):
+    lotId = sys.argv[1]
+    delta = sys.argv[2]
+    send_upd(lotId, delta)
+
+if __name__ == "__main__":
+    main()
